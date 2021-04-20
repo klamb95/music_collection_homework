@@ -7,7 +7,7 @@ CREATE TABLE artists (
 );
 
 CREATE TABLE albums (
-    id SERIAL PRIMARY KEY
+    id SERIAL PRIMARY KEY,
     title VARCHAR(255),
     artist_name VARCHAR(255)
 );
