@@ -6,41 +6,37 @@ from models.artist import Artist
 import repositories.artist_repository as artist_repository
 
 def save(album):
-    sql = "INSERT INTO albums (title, genre, artist_id) VALUES (%s, %s, %s) RETURNING *"
-    values = [album.title, album.genre, album.artist_id]
+    sql = "INSERT INTO albums (title, artist_id, genre) VALUES (%s, %s, %s) RETURNING *"
+    values = [album.title, album.artist.id, album.genre]
     results = run_sql(sql, values)
     id = results[0]['id']
     album.id = id
     return album
-    
-
-    
 
 def delete_all():
     sql = "DELETE FROM albums"
     run_sql(sql)
-    
-        
 
 
 def select(id):
     album = None
+
     sql = "SELECT * FROM albums WHERE id = %s"
     values = [id]
     result = run_sql(sql, values)[0]
 
     if result is not None:
-        album = Album(result['title'], result['genre'], result['artist_name'], result['id'])
-        return album
-    
+        artist = artist_repository.select(result['artist_id'])
+        album = Album(result['title'], artist, result['genre'], result['id'])
+    return album
 
+### EXTENSIONS
 
 
 def delete(id):
-    sql = "DELETE FROM albums WHERE id= %s"
+    sql = "DELETE FROM albums WHERE id = %s"
     values = [id]
     run_sql(sql, values)
-
 
 def select_all():
     albums = []
@@ -58,17 +54,3 @@ def update(album):
     sql = "UPDATE albums SET (title, artist_id, genre) = (%s, %s, %s) WHERE id = %s"
     values = [album.title, album.artist.id, album.genre, album.id]
     run_sql(sql, values)
-    
-
-
-
-
-
-
-
-    # albums = []
-
-    # for row in results:
-    #     album = Album(row['title'], row['artist_name'], row['id'])
-    #     albums.append(album)
-    # return albums
